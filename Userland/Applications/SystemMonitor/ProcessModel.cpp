@@ -73,8 +73,6 @@ int ProcessModel::column_count(GUI::ModelIndex const&) const
 String ProcessModel::column_name(int column) const
 {
     switch (column) {
-    case Column::Icon:
-        return "";
     case Column::PID:
         return "PID";
     case Column::TID:
@@ -144,7 +142,6 @@ GUI::Variant ProcessModel::data(GUI::ModelIndex const& index, GUI::ModelRole rol
 
     if (role == GUI::ModelRole::TextAlignment) {
         switch (index.column()) {
-        case Column::Icon:
         case Column::Name:
         case Column::State:
         case Column::User:
@@ -185,8 +182,6 @@ GUI::Variant ProcessModel::data(GUI::ModelIndex const& index, GUI::ModelRole rol
 
     if (role == GUI::ModelRole::Sort) {
         switch (index.column()) {
-        case Column::Icon:
-            return 0;
         case Column::PID:
             return thread.current_state.pid;
         case Column::TID:
@@ -251,8 +246,6 @@ GUI::Variant ProcessModel::data(GUI::ModelIndex const& index, GUI::ModelRole rol
 
     if (role == GUI::ModelRole::Display) {
         switch (index.column()) {
-        case Column::Icon:
-            return icon_for(thread);
         case Column::PID:
             return thread.current_state.pid;
         case Column::TID:
@@ -326,6 +319,12 @@ GUI::Variant ProcessModel::data(GUI::ModelIndex const& index, GUI::ModelRole rol
     }
 
     return {};
+}
+
+GUI::Icon ProcessModel::icon_for(GUI::ModelIndex const& index) const
+{
+    VERIFY(is_within_range(index));
+    return icon_for(*static_cast<Thread const*>(index.internal_data()));
 }
 
 GUI::Icon ProcessModel::icon_for(Thread const& thread) const

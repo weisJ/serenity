@@ -43,13 +43,8 @@ public:
     virtual GUI::Variant data(const GUI::ModelIndex& index, GUI::ModelRole role = GUI::ModelRole::Display) const override
     {
         if (role == GUI::ModelRole::Display) {
-            if (index.column() == 0) {
-                if (index.row() == ProcessModel::Column::Icon) {
-                    // NOTE: The icon column is nameless in ProcessModel, but we want it to have a name here.
-                    return "Icon";
-                }
+            if (index.column() == 0)
                 return m_target.column_name(index.row());
-            }
             return m_target_index.sibling_at_column(index.row()).data();
         }
 
