@@ -85,6 +85,8 @@ public:
 
     virtual void model_did_update(unsigned flags) override;
 
+    Function<void(int, int)> on_column_visibility_changed;
+
 protected:
     virtual ~AbstractTableView() override = default;
     AbstractTableView();

@@ -369,8 +369,10 @@ void AbstractTableView::header_did_change_section_size(Badge<HeaderView>, Gfx::O
     update();
 }
 
-void AbstractTableView::header_did_change_section_visibility(Badge<HeaderView>, Gfx::Orientation, int, bool)
+void AbstractTableView::header_did_change_section_visibility(Badge<HeaderView>, Gfx::Orientation, int section, bool visible)
 {
+    if (on_column_visibility_changed)
+        on_column_visibility_changed(section, visible);
     update_content_size();
     update();
 }
