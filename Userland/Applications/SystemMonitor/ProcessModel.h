@@ -21,36 +21,42 @@ class GraphWidget;
 
 class ProcessModel final : public GUI::Model {
 public:
+
+#define ENUMERATE_PROCESS_MODEL_COLUMNS                    \
+    __ENUMERATE_PROCESS_MODEL_COLUMN(Name)                 \
+    __ENUMERATE_PROCESS_MODEL_COLUMN(PID)                  \
+    __ENUMERATE_PROCESS_MODEL_COLUMN(TID)                  \
+    __ENUMERATE_PROCESS_MODEL_COLUMN(CPU)                  \
+    __ENUMERATE_PROCESS_MODEL_COLUMN(State)                \
+    __ENUMERATE_PROCESS_MODEL_COLUMN(User)                 \
+    __ENUMERATE_PROCESS_MODEL_COLUMN(Virtual)              \
+    __ENUMERATE_PROCESS_MODEL_COLUMN(DirtyPrivate)         \
+    __ENUMERATE_PROCESS_MODEL_COLUMN(Pledge)               \
+    __ENUMERATE_PROCESS_MODEL_COLUMN(Physical)             \
+    __ENUMERATE_PROCESS_MODEL_COLUMN(CleanInode)           \
+    __ENUMERATE_PROCESS_MODEL_COLUMN(PurgeableVolatile)    \
+    __ENUMERATE_PROCESS_MODEL_COLUMN(PurgeableNonvolatile) \
+    __ENUMERATE_PROCESS_MODEL_COLUMN(Veil)                 \
+    __ENUMERATE_PROCESS_MODEL_COLUMN(Processor)            \
+    __ENUMERATE_PROCESS_MODEL_COLUMN(Priority)             \
+    __ENUMERATE_PROCESS_MODEL_COLUMN(PPID)                 \
+    __ENUMERATE_PROCESS_MODEL_COLUMN(PGID)                 \
+    __ENUMERATE_PROCESS_MODEL_COLUMN(SID)                  \
+    __ENUMERATE_PROCESS_MODEL_COLUMN(Syscalls)             \
+    __ENUMERATE_PROCESS_MODEL_COLUMN(InodeFaults)          \
+    __ENUMERATE_PROCESS_MODEL_COLUMN(ZeroFaults)           \
+    __ENUMERATE_PROCESS_MODEL_COLUMN(CowFaults)            \
+    __ENUMERATE_PROCESS_MODEL_COLUMN(FileReadBytes)        \
+    __ENUMERATE_PROCESS_MODEL_COLUMN(FileWriteBytes)       \
+    __ENUMERATE_PROCESS_MODEL_COLUMN(UnixSocketReadBytes)  \
+    __ENUMERATE_PROCESS_MODEL_COLUMN(UnixSocketWriteBytes) \
+    __ENUMERATE_PROCESS_MODEL_COLUMN(IPv4SocketReadBytes)  \
+    __ENUMERATE_PROCESS_MODEL_COLUMN(IPv4SocketWriteBytes)
+
     enum Column {
-        Name = 0,
-        PID,
-        TID,
-        CPU,
-        State,
-        User,
-        Virtual,
-        DirtyPrivate,
-        Pledge,
-        Physical,
-        CleanInode,
-        PurgeableVolatile,
-        PurgeableNonvolatile,
-        Veil,
-        Processor,
-        Priority,
-        PPID,
-        PGID,
-        SID,
-        Syscalls,
-        InodeFaults,
-        ZeroFaults,
-        CowFaults,
-        FileReadBytes,
-        FileWriteBytes,
-        UnixSocketReadBytes,
-        UnixSocketWriteBytes,
-        IPv4SocketReadBytes,
-        IPv4SocketWriteBytes,
+#define __ENUMERATE_PROCESS_MODEL_COLUMN(x) x,
+        ENUMERATE_PROCESS_MODEL_COLUMNS
+#undef __ENUMERATE_PROCESS_MODEL_COLUMN
         __Count
     };
 
@@ -70,6 +76,8 @@ public:
     virtual Vector<GUI::ModelIndex> matches(StringView, unsigned = MatchesFlag::AllMatching, GUI::ModelIndex const& = GUI::ModelIndex()) override;
     void update();
 
+    Optional<int> column_index_for_name(StringView name);
+    String name_for_column_index(int column);
     GUI::Icon icon_for(GUI::ModelIndex const& index) const;
 
     struct CpuInfo {

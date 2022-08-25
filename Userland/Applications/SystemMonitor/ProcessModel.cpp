@@ -70,6 +70,28 @@ int ProcessModel::column_count(GUI::ModelIndex const&) const
     return Column::__Count;
 }
 
+Optional<int> ProcessModel::column_index_for_name(StringView name)
+{
+#define __ENUMERATE_PROCESS_MODEL_COLUMN(column) \
+    if (name.equals_ignoring_case(#column""sv))      \
+        return column;
+    ENUMERATE_PROCESS_MODEL_COLUMNS
+#undef __ENUMERATE_PROCESS_MODEL_COLUMN
+    return {};
+}
+
+String ProcessModel::name_for_column_index(int column)
+{
+    switch(column) {
+#define __ENUMERATE_PROCESS_MODEL_COLUMN(column) \
+    case column:                                 \
+        return #column""sv;
+    ENUMERATE_PROCESS_MODEL_COLUMNS
+#undef __ENUMERATE_PROCESS_MODEL_COLUMN
+    }
+    VERIFY_NOT_REACHED();
+}
+
 String ProcessModel::column_name(int column) const
 {
     switch (column) {

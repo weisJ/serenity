@@ -295,13 +295,35 @@ ErrorOr<int> serenity_main(Main::Arguments arguments)
     process_table_view.set_model(TRY(GUI::SortingProxyModel::create(process_model)));
     for (auto column = 0; column < ProcessModel::Column::__Count; ++column)
         process_table_view.set_column_visible(column, false);
-    process_table_view.set_column_visible(ProcessModel::Column::PID, true);
-    process_table_view.set_column_visible(ProcessModel::Column::TID, true);
-    process_table_view.set_column_visible(ProcessModel::Column::Name, true);
-    process_table_view.set_column_visible(ProcessModel::Column::CPU, true);
-    process_table_view.set_column_visible(ProcessModel::Column::User, true);
-    process_table_view.set_column_visible(ProcessModel::Column::Virtual, true);
-    process_table_view.set_column_visible(ProcessModel::Column::DirtyPrivate, true);
+    auto visible_columns = Config::read_string("SystemMonitor"sv, "ProcessTable"sv, "VisibleColumns"sv, ""sv);
+    if (visible_columns.is_empty()) {
+        dbgln("HERE 1");
+        process_table_view.set_column_visible(ProcessModel::Column::PID, true);
+        process_table_view.set_column_visible(ProcessModel::Column::TID, true);
+        process_table_view.set_column_visible(ProcessModel::Column::Name, true);
+        process_table_view.set_column_visible(ProcessModel::Column::CPU, true);
+        process_table_view.set_column_visible(ProcessModel::Column::User, true);
+        process_table_view.set_column_visible(ProcessModel::Column::Virtual, true);
+        process_table_view.set_column_visible(ProcessModel::Column::DirtyPrivate, true);
+    } else {
+        auto visible_column_names = visible_columns.split_view(',');
+        dbgln("HERE 2 {}", visible_columns);
+        for (auto name : visible_column_names) {
+            dbgln("    {}", name);
+            auto index = process_model->column_index_for_name(name);
+            if (index.has_value())
+                process_table_view.set_column_visible(*index, true);
+        }
+    }
+    process_table_view.on_column_visibility_changed = [&](auto, auto) {
+        auto visible_column_names = Vector<String, ProcessModel::Column::__Count> {};
+        for (auto column = 0; column < ProcessModel::Column::__Count; ++column) {
+            if (process_table_view.column_header().is_section_visible(column))
+                visible_column_names.append(process_model->name_for_column_index(column));
+        }
+        auto visible_columns = String::join(',', visible_column_names);
+        Config::write_string("SystemMonitor"sv, "ProcessTable"sv, "VisibleColumns"sv, visible_columns);
+    };
 
     process_table_view.set_key_column_and_sort_order(ProcessModel::Column::CPU, GUI::SortOrder::Descending);
     process_model->update();
